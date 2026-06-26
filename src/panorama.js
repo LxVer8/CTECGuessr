@@ -110,7 +110,6 @@ function buildGameViewer(folder) {
   camera.rotation.order = 'YXZ';
 
   const controls = { yaw: 0, pitch: 0 };
-  let targetFov = DEFAULT_FOV;
 
   let mesh = null;
   let ready = false;
@@ -134,10 +133,6 @@ function buildGameViewer(folder) {
     if (!ready) {
       animId = requestAnimationFrame(animate);
       return;
-    }
-    if (Math.abs(camera.fov - targetFov) > 0.05) {
-      camera.fov += (targetFov - camera.fov) * 0.2;
-      camera.updateProjectionMatrix();
     }
     camera.rotation.y = controls.yaw;
     camera.rotation.x = controls.pitch;
@@ -257,14 +252,18 @@ function setupInteractiveControls(viewer) {
     e.preventDefault();
     const delta = e.deltaY;
     const factor = delta < 0 ? 1 / 1.10 : 1.10;
-    targetFov = Math.max(MIN_FOV, Math.min(MAX_FOV, targetFov * factor));
-    if (Math.abs(targetFov - camera.fov) < 0.05) return;
+    let newFov = camera.fov * factor;
+    newFov = Math.max(MIN_FOV, Math.min(MAX_FOV, newFov));
+    if (Math.abs(newFov - camera.fov) < 0.05) return;
+    camera.fov = newFov;
+    camera.updateProjectionMatrix();
   };
   canvas.addEventListener('wheel', onWheel, { passive: false });
 
   const onDblClick = (e) => {
     e.preventDefault();
-    targetFov = DEFAULT_FOV;
+    camera.fov = DEFAULT_FOV;
+    camera.updateProjectionMatrix();
   };
   canvas.addEventListener('dblclick', onDblClick);
 
@@ -309,7 +308,10 @@ function setupInteractiveControls(viewer) {
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (touchState.lastTouchDist > 0) {
         const ratio = dist / touchState.lastTouchDist;
-        targetFov = Math.max(MIN_FOV, Math.min(MAX_FOV, touchState.lastFov / ratio));
+        let newFov = touchState.lastFov / ratio;
+        newFov = Math.max(MIN_FOV, Math.min(MAX_FOV, newFov));
+        camera.fov = newFov;
+        camera.updateProjectionMatrix();
       }
       e.preventDefault();
     }
@@ -337,10 +339,16 @@ function setupInteractiveControls(viewer) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.key === '+' || e.key === '=') {
       e.preventDefault();
-      targetFov = Math.max(MIN_FOV, camera.fov / 1.10);
+      let newFov = camera.fov / 1.10;
+      newFov = Math.max(MIN_FOV, newFov);
+      camera.fov = newFov;
+      camera.updateProjectionMatrix();
     } else if (e.key === '-' || e.key === '_') {
       e.preventDefault();
-      targetFov = Math.min(MAX_FOV, camera.fov * 1.10);
+      let newFov = camera.fov * 1.10;
+      newFov = Math.min(MAX_FOV, newFov);
+      camera.fov = newFov;
+      camera.updateProjectionMatrix();
     } else if (e.key === '0' || e.key === 'Escape') {
       e.preventDefault();
       camera.fov = DEFAULT_FOV;
