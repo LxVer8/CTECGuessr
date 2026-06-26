@@ -9,56 +9,7 @@
 </head>
 <body>
 
-  <!-- ===== MENU OVERLAY ===== -->
-  <div id="menu-overlay">
-    <div class="menu-card">
-
-      <!-- Two‑column layout -->
-      <div class="menu-layout">
-
-        <!-- LEFT COLUMN: existing controls -->
-        <div class="menu-left">
-          <h1>CTECGuessr</h1>
-
-          <div class="menu-field">
-            <label for="username-input">username</label>
-            <input type="text" id="username-input" placeholder="Enter your name" value="Guest" maxlength="16" autocomplete="off">
-          </div>
-
-          <div class="menu-group">
-            <label>DIMENSION</label>
-            <div class="menu-options" id="dimension-options">
-              <button class="menu-option active" data-value="overworld">Overworld</button>
-              <button class="menu-option unavailable" data-value="nether">Nether</button>
-              <button class="menu-option unavailable" data-value="end">End</button>
-            </div>
-          </div>
-
-          <div class="menu-group">
-            <label>GAMEMODE</label>
-            <div class="menu-options" id="gamemode-options">
-              <button class="menu-option active" data-value="infinite">Infinite</button>
-              <button class="menu-option" data-value="round">Round (5)</button>
-              <button class="menu-option" data-value="multiplayer" id="multiplayer-btn">Multiplayer</button>
-            </div>
-          </div>
-
-          <button id="play-btn">Play</button>
-          <div id="menu-feedback"></div>
-        </div>
-
-        <!-- RIGHT COLUMN: extra content (placeholder) -->
-        <div class="menu-right">
-          <h3>⚙️ Settings</h3>
-          <p style="font-size:0.9rem; color:#94a3b8; margin-top:0.5rem;">
-            Extra options will appear here.
-          </p>
-          <!-- You can add more controls later -->
-        </div>
-
-      </div> <!-- /menu-layout -->
-
-      <!-- Multiplayer section (hidden by default, sits below both columns) -->
+  <!-- Menu markup disabled for debug.
       <div id="multiplayer-section" style="display: none; margin-top: 15px; border-top: 1px solid #444; padding-top: 15px;">
         <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px; text-align: center;">
@@ -83,6 +34,7 @@
 
     </div> <!-- /menu-card -->
   </div> <!-- /menu-overlay -->
+  -->
 
   <!-- ===== END SCREEN ===== -->
   <div id="end-screen" style="display:none;">
@@ -152,7 +104,8 @@
   <!-- Main entry point -->
   <script type="module">
     import './src/firebase.js';
-    import './src/menu.js';
+    import { startGame } from './src/game.js';
+    startGame({ dimension: 'overworld', gamemode: 'infinite', roundCount: Infinity });
   </script>
 </body>
 </html>
