@@ -4,6 +4,7 @@ import { MAP_FILE, ORIGIN_X, ORIGIN_Y } from './config.js';
 // Preload the map image as early as possible
 const mapPreload = new Image();
 mapPreload.src = MAP_FILE;
+mapPreload.decode?.().catch(() => {});
 
 // DOM refs
 const mapImage = document.getElementById('map-image');
@@ -30,20 +31,37 @@ const BASE_LINE_STROKE = 3.2;
 
 // ---------- Initialization ----------
 export function initMap() {
-  mapImage.src = MAP_FILE;
+  if (mapImage.src !== MAP_FILE) {
+    mapImage.src = MAP_FILE;
+  }
   mapImage.onerror = () => console.warn('Map image failed to load');
-  mapImage.addEventListener('load', fitMapToWrapper);
+
+  function handleMapLoaded() {
+    mapImage.decode?.().catch(() => {});
+    requestAnimationFrame(fitMapToWrapper);
+  }
+
+  if (mapImage.complete && mapImage.naturalWidth > 0) {
+    handleMapLoaded();
+  } else {
+    mapImage.addEventListener('load', handleMapLoaded, { once: true });
+  }
+
   // Attach wheel, drag, and click events
   mapWrapper.addEventListener('wheel', onWheel, { passive: false });
   mapWrapper.addEventListener('mousedown', onMouseDown);
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseup', onMouseUp);
   mapWrapper.addEventListener('contextmenu', e => e.preventDefault());
-  const wrapperObserver = new ResizeObserver(() => {
-    handleWrapperResize();
-  });
+  let resizeTimeout = null;
+  const scheduleResize = () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => requestAnimationFrame(handleWrapperResize), 50);
+  };
+
+  const wrapperObserver = new ResizeObserver(scheduleResize);
   wrapperObserver.observe(mapWrapper);
-  window.addEventListener('resize', onResize);
+  window.addEventListener('resize', scheduleResize);
   return {
     placeGuessPin,
     placeActualPin,
@@ -250,9 +268,4 @@ function onMouseUp(e) {
 
 function onResize() {
   if (mapImage.complete) fitMapToWrapper();
-}
-
-// Auto-fit on load
-if (mapImage.complete && mapImage.naturalWidth > 0) {
-  fitMapToWrapper();
 }
