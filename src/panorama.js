@@ -83,6 +83,28 @@ function getDragSensitivity(camera) {
   return BASE_DRAG_SENSITIVITY * zoomFactor;
 }
 
+function getCameraSpaceDirection(x, y, width, height, fov) {
+  const ndcX = (x / width) * 2 - 1;
+  const ndcY = -((y / height) * 2 - 1);
+  const halfFov = THREE.MathUtils.degToRad(fov) / 2;
+  const dir = new THREE.Vector3(
+    ndcX * Math.tan(halfFov) * (width / height),
+    ndcY * Math.tan(halfFov),
+    -1
+  );
+  return dir.normalize();
+}
+
+function getWorldDirectionForScreenPoint(camera, x, y, width, height, fov) {
+  const localDir = getCameraSpaceDirection(x, y, width, height, fov);
+  return localDir.applyQuaternion(camera.quaternion).normalize();
+}
+
+function syncCameraFromControls(camera, controls) {
+  camera.rotation.set(controls.pitch, controls.yaw, 0, 'YXZ');
+  camera.updateMatrixWorld(true);
+}
+
 // ----- Build game viewer (interactive, solid fallback) -----
 function buildGameViewer(folder) {
   const width = container.clientWidth;
@@ -257,13 +279,30 @@ function setupInteractiveControls(viewer) {
 
   const onWheel = (e) => {
     e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const cursorX = e.clientX - rect.left;
+    const cursorY = e.clientY - rect.top;
+    const oldFov = camera.fov;
+    const anchorDir = getWorldDirectionForScreenPoint(camera, cursorX, cursorY, rect.width, rect.height, oldFov);
+
     const delta = e.deltaY;
     const factor = delta < 0 ? 1 / 1.10 : 1.10;
     let newFov = camera.fov * factor;
     newFov = Math.max(MIN_FOV, Math.min(MAX_FOV, newFov));
     if (Math.abs(newFov - camera.fov) < 0.05) return;
+
+    const newLocalDir = getCameraSpaceDirection(cursorX, cursorY, rect.width, rect.height, newFov);
+    const zoomQuat = new THREE.Quaternion().setFromUnitVectors(newLocalDir, anchorDir);
     camera.fov = newFov;
     camera.updateProjectionMatrix();
+    camera.quaternion.multiply(zoomQuat);
+    camera.updateMatrixWorld(true);
+
+    controls.yaw = camera.rotation.y;
+    controls.pitch = camera.rotation.x;
+    controls.pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, controls.pitch));
+    syncCameraFromControls(camera, controls);
+    updateCompass(controls.yaw);
   };
   canvas.addEventListener('wheel', onWheel, { passive: false });
 
