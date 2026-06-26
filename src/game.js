@@ -87,7 +87,8 @@ function startRound() {
       actionBtn.textContent = 'Guess';
       actionBtn.disabled = true;
       const wrapper = document.getElementById('map-wrapper');
-      wrapper.addEventListener('pinPlaced', onPinPlaced, { once: true });
+      wrapper.removeEventListener('pinPlaced', onPinPlaced);
+      wrapper.addEventListener('pinPlaced', onPinPlaced);
     })
     .catch((err) => {
       // Panorama failed to load – skip this location

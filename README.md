@@ -23,7 +23,10 @@ Play GeoGuessr in CTEC!
 - Small tweaks:
   - Translation to other languages, mostly chinese
   - Sound effects and background music
-  - A timer
+  - An optional timer
+  - Options to lower sensibility
+  - Make it so zooms are applies where the cursor is rather than the center of the screen
 
 If you have any suggestions feel free to DM me on Discord at LxVer8
+
 And you can join CTEC's Discord server [here](https://discord.gg/H6uHghNq5Z)
