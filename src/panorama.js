@@ -251,10 +251,10 @@ function setupInteractiveControls(viewer) {
   const onWheel = (e) => {
     e.preventDefault();
     const delta = e.deltaY;
-    const factor = 1 + delta * 0.0012;
+    const factor = delta < 0 ? 0.96 : 1.04;
     let newFov = camera.fov * factor;
     newFov = Math.max(MIN_FOV, Math.min(MAX_FOV, newFov));
-    if (Math.abs(newFov - camera.fov) < 0.01) return;
+    if (Math.abs(newFov - camera.fov) < 0.05) return;
     camera.fov = newFov;
     camera.updateProjectionMatrix();
   };
