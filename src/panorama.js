@@ -279,8 +279,8 @@ function setupInteractiveControls(viewer) {
     const offsetY = (cursorY - centerY) / centerY;
     const zoomAmount = Math.max(0.01, Math.abs(oldFov - newFov) / oldFov) * 0.2;
 
-    controls.yaw += offsetX * zoomAmount * (delta < 0 ? 1 : -1);
-    controls.pitch -= offsetY * zoomAmount * (delta < 0 ? 1 : -1);
+    controls.yaw -= offsetX * zoomAmount * (delta < 0 ? 1 : -1);
+    controls.pitch += offsetY * zoomAmount * (delta < 0 ? 1 : -1);
     controls.pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, controls.pitch));
 
     camera.fov = newFov;
