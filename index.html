@@ -107,5 +107,21 @@
     import { startGame } from './src/game.js';
     startGame({ dimension: 'overworld', gamemode: 'infinite', roundCount: Infinity });
   </script>
+
+  <!-- Remove any unexpected top fixed bars or injected header UI -->
+  <script>
+    window.addEventListener('load', () => {
+      document.querySelectorAll('body > *').forEach(el => {
+        const style = window.getComputedStyle(el);
+        if (!style) return;
+        const position = style.position;
+        const top = parseFloat(style.top);
+        const height = parseFloat(style.height);
+        if ((position === 'fixed' || position === 'sticky') && top <= 1 && height > 0 && height < 120) {
+          el.style.display = 'none';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
