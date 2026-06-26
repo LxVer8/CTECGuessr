@@ -6,6 +6,7 @@ const PANORAMA_PREFIX = 'panorama_';
 const MIN_FOV = 12;
 const MAX_FOV = 130;
 const DEFAULT_FOV = 100;
+const BASE_DRAG_SENSITIVITY = 0.005;
 
 const container = document.getElementById('panorama-container');
 const compassNeedle = document.getElementById('compass-needle');
@@ -75,6 +76,11 @@ function updateCompass(yawRad) {
   if (!compassNeedle) return;
   const deg = yawRad * (180 / Math.PI);
   compassNeedle.style.transform = `translate(-50%, -100%) rotate(${deg}deg)`;
+}
+
+function getDragSensitivity(camera) {
+  const zoomFactor = camera.fov / DEFAULT_FOV;
+  return BASE_DRAG_SENSITIVITY * zoomFactor;
 }
 
 // ----- Build game viewer (interactive, solid fallback) -----
@@ -227,8 +233,9 @@ function setupInteractiveControls(viewer) {
     if (!dragging) return;
     const dx = e.clientX - lastX;
     const dy = e.clientY - lastY;
-    controls.yaw += dx * 0.005;
-    controls.pitch += dy * 0.005;
+    const sensitivity = getDragSensitivity(camera);
+    controls.yaw += dx * sensitivity;
+    controls.pitch += dy * sensitivity;
     controls.pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, controls.pitch));
     camera.rotation.y = controls.yaw;
     camera.rotation.x = controls.pitch;
@@ -295,8 +302,9 @@ function setupInteractiveControls(viewer) {
     if (touchState.mode === 'drag' && touches.length === 1) {
       const dx = touches[0].clientX - touchState.startX;
       const dy = touches[0].clientY - touchState.startY;
-      controls.yaw = touchState.startYaw + dx * 0.005;
-      controls.pitch = touchState.startPitch + dy * 0.005;
+      const sensitivity = getDragSensitivity(camera);
+      controls.yaw = touchState.startYaw + dx * sensitivity;
+      controls.pitch = touchState.startPitch + dy * sensitivity;
       controls.pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, controls.pitch));
       camera.rotation.y = controls.yaw;
       camera.rotation.x = controls.pitch;
