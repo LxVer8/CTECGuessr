@@ -8,6 +8,7 @@ mapPreload.src = MAP_FILE;
 // DOM refs
 const mapImage = document.getElementById('map-image');
 const mapWrapper = document.getElementById('map-wrapper');
+const mapCorner = document.getElementById('map-corner');
 const mapInner = document.getElementById('map-inner');
 const guessPin = document.getElementById('guess-pin');
 const actualPin = document.getElementById('actual-pin');
@@ -35,11 +36,10 @@ export function initMap() {
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseup', onMouseUp);
   mapWrapper.addEventListener('contextmenu', e => e.preventDefault());
-  mapWrapper.addEventListener('transitionend', (e) => {
-    if (e.target === mapWrapper && e.propertyName === 'height') {
-      fitMapToWrapper();
-    }
+  const wrapperObserver = new ResizeObserver(() => {
+    handleWrapperResize();
   });
+  wrapperObserver.observe(mapWrapper);
   window.addEventListener('resize', onResize);
   return {
     placeGuessPin,
@@ -112,6 +112,25 @@ function fitMapToWrapper() {
   mapZoom = coverZoom;
   mapPanX = (wW - natW * coverZoom) / 2;
   mapPanY = (wH - natH * coverZoom) / 2;
+  applyTransform();
+  updateDynamicScale();
+}
+
+function handleWrapperResize() {
+  if (!mapImage.complete || mapImage.naturalWidth === 0) return;
+  const wW = mapWrapper.clientWidth, wH = mapWrapper.clientHeight;
+  const natW = mapImage.naturalWidth, natH = mapImage.naturalHeight;
+  if (wW === 0 || wH === 0) return;
+
+  const oldCenterX = (wW / 2 - mapPanX) / mapZoom;
+  const oldCenterY = (wH / 2 - mapPanY) / mapZoom;
+  const minZoom = Math.max(wW / natW, wH / natH);
+
+  mapZoom = Math.max(mapZoom, minZoom);
+  mapPanX = wW / 2 - oldCenterX * mapZoom;
+  mapPanY = wH / 2 - oldCenterY * mapZoom;
+
+  clampPan();
   applyTransform();
   updateDynamicScale();
 }
