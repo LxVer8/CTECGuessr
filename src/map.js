@@ -31,6 +31,11 @@ export function initMap() {
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseup', onMouseUp);
   mapWrapper.addEventListener('contextmenu', e => e.preventDefault());
+  mapWrapper.addEventListener('transitionend', (e) => {
+    if (e.target === mapWrapper && e.propertyName === 'height') {
+      fitMapToWrapper();
+    }
+  });
   window.addEventListener('resize', onResize);
   return {
     placeGuessPin,
