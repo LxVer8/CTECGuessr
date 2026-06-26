@@ -6,7 +6,7 @@ export const LOCATIONS = [
     { image: 'location5', x: -122, z: 429 },
     { image: 'location6', x: 312, z: 805 },
     { image: 'location7', x: 590, z: 260 },
-    { image: 'location8', x: 752, z: 253 },
+    { image: 'location8', x: 929, z: 140 },
     { image: 'location9', x: 751, z: 12 },
     { image: 'location10', x: 1056, z: 143 },
     { image: 'location11', x: 1268, z: 233 },
