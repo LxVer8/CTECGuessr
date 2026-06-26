@@ -565,6 +565,9 @@ nav,
     transform-origin: 0 0;
     will-change: transform;
 }
+#map-inner.zoom-transition {
+    transition: transform 0.15s ease-out;
+}
 #map-image {
     display: block;
     user-select: none;

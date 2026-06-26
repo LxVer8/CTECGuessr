@@ -13,6 +13,7 @@ const mapInner = document.getElementById('map-inner');
 const guessPin = document.getElementById('guess-pin');
 const actualPin = document.getElementById('actual-pin');
 const svgLine = document.querySelector('#connection-line line');
+let zoomTransitionTimeout = null;
 
 // Internal state
 let mapZoom = 1;
@@ -187,7 +188,7 @@ function onWheel(e) {
   const rect = mapWrapper.getBoundingClientRect();
   const cursorX = e.clientX - rect.left, cursorY = e.clientY - rect.top;
   const oldZoom = mapZoom;
-  const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+  const factor = e.deltaY < 0 ? 1.08 : 1 / 1.08;
   let newZoom = oldZoom * factor;
   const minZoom = Math.max(mapWrapper.clientWidth / mapImage.naturalWidth, mapWrapper.clientHeight / mapImage.naturalHeight);
   newZoom = Math.min(2.8, Math.max(minZoom, newZoom));
@@ -196,6 +197,11 @@ function onWheel(e) {
   mapPanX = cursorX - ((cursorX - mapPanX) / oldZoom) * mapZoom;
   mapPanY = cursorY - ((cursorY - mapPanY) / oldZoom) * mapZoom;
   clampPan();
+  mapInner.classList.add('zoom-transition');
+  clearTimeout(zoomTransitionTimeout);
+  zoomTransitionTimeout = setTimeout(() => {
+    mapInner.classList.remove('zoom-transition');
+  }, 150);
   applyTransform();
   updateDynamicScale();
 }
