@@ -20,6 +20,8 @@ let mapPanX = 0, mapPanY = 0;
 let selectedRawX = null, selectedRawY = null;
 let actualRawX = null, actualRawY = null;
 let isGuessed = false;
+let wrapperWidth = 0;
+let wrapperHeight = 0;
 
 // Pin size scaling
 const BASE_PIN_SIZE = 28;
@@ -105,7 +107,9 @@ export function fitMap() {
 // ---------- Internal helpers ----------
 function fitMapToWrapper() {
   if (!mapImage.complete || mapImage.naturalWidth === 0) return;
-  const wW = mapWrapper.clientWidth, wH = mapWrapper.clientHeight;
+  wrapperWidth = mapWrapper.clientWidth;
+  wrapperHeight = mapWrapper.clientHeight;
+  const wW = wrapperWidth, wH = wrapperHeight;
   const natW = mapImage.naturalWidth, natH = mapImage.naturalHeight;
   if (wW === 0 || wH === 0) return;
   const coverZoom = Math.max(wW / natW, wH / natH);
@@ -118,17 +122,23 @@ function fitMapToWrapper() {
 
 function handleWrapperResize() {
   if (!mapImage.complete || mapImage.naturalWidth === 0) return;
-  const wW = mapWrapper.clientWidth, wH = mapWrapper.clientHeight;
-  const natW = mapImage.naturalWidth, natH = mapImage.naturalHeight;
-  if (wW === 0 || wH === 0) return;
+  const newWidth = mapWrapper.clientWidth;
+  const newHeight = mapWrapper.clientHeight;
+  if (newWidth === 0 || newHeight === 0) return;
 
-  const oldCenterX = (wW / 2 - mapPanX) / mapZoom;
-  const oldCenterY = (wH / 2 - mapPanY) / mapZoom;
-  const minZoom = Math.max(wW / natW, wH / natH);
+  const oldWidth = wrapperWidth || newWidth;
+  const oldHeight = wrapperHeight || newHeight;
+
+  const oldCenterX = (oldWidth / 2 - mapPanX) / mapZoom;
+  const oldCenterY = (oldHeight / 2 - mapPanY) / mapZoom;
+  const minZoom = Math.max(newWidth / mapImage.naturalWidth, newHeight / mapImage.naturalHeight);
 
   mapZoom = Math.max(mapZoom, minZoom);
-  mapPanX = wW / 2 - oldCenterX * mapZoom;
-  mapPanY = wH / 2 - oldCenterY * mapZoom;
+  mapPanX = newWidth / 2 - oldCenterX * mapZoom;
+  mapPanY = newHeight / 2 - oldCenterY * mapZoom;
+
+  wrapperWidth = newWidth;
+  wrapperHeight = newHeight;
 
   clampPan();
   applyTransform();
