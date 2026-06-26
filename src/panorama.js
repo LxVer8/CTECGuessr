@@ -251,7 +251,7 @@ function setupInteractiveControls(viewer) {
   const onWheel = (e) => {
     e.preventDefault();
     const delta = e.deltaY;
-    const factor = delta < 0 ? 0.96 : 1.04;
+    const factor = delta < 0 ? 1 / 1.10 : 1.10;
     let newFov = camera.fov * factor;
     newFov = Math.max(MIN_FOV, Math.min(MAX_FOV, newFov));
     if (Math.abs(newFov - camera.fov) < 0.05) return;
@@ -339,13 +339,13 @@ function setupInteractiveControls(viewer) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.key === '+' || e.key === '=') {
       e.preventDefault();
-      let newFov = camera.fov * 0.92;
+      let newFov = camera.fov / 1.10;
       newFov = Math.max(MIN_FOV, newFov);
       camera.fov = newFov;
       camera.updateProjectionMatrix();
     } else if (e.key === '-' || e.key === '_') {
       e.preventDefault();
-      let newFov = camera.fov * 1.08;
+      let newFov = camera.fov * 1.10;
       newFov = Math.min(MAX_FOV, newFov);
       camera.fov = newFov;
       camera.updateProjectionMatrix();

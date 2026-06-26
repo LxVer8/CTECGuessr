@@ -188,7 +188,7 @@ function onWheel(e) {
   const rect = mapWrapper.getBoundingClientRect();
   const cursorX = e.clientX - rect.left, cursorY = e.clientY - rect.top;
   const oldZoom = mapZoom;
-  const factor = e.deltaY < 0 ? 1.08 : 1 / 1.08;
+  const factor = e.deltaY < 0 ? 1.10 : 1 / 1.10;
   let newZoom = oldZoom * factor;
   const minZoom = Math.max(mapWrapper.clientWidth / mapImage.naturalWidth, mapWrapper.clientHeight / mapImage.naturalHeight);
   newZoom = Math.min(2.8, Math.max(minZoom, newZoom));
