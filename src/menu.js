@@ -12,6 +12,7 @@ function safeGet(id) {
 
 // DOM refs
 const menuOverlay = safeGet('menu-overlay');
+if (menuOverlay) menuOverlay.style.display = 'flex';
 if (menuOverlay) {
   menuOverlay.style.backgroundColor = 'transparent';
 }
