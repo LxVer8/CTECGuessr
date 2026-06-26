@@ -1,6 +1,10 @@
 // src/map.js
 import { MAP_FILE, ORIGIN_X, ORIGIN_Y } from './config.js';
 
+// Preload the map image as early as possible
+const mapPreload = new Image();
+mapPreload.src = MAP_FILE;
+
 // DOM refs
 const mapImage = document.getElementById('map-image');
 const mapWrapper = document.getElementById('map-wrapper');
