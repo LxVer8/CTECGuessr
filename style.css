@@ -289,6 +289,26 @@ body {
     overflow: hidden;
 }
 
+/* Hide any fixed top bars or injected header toolbar UI from the site */
+header,
+nav,
+.top-bar,
+.topbar,
+.toolbar,
+.app-bar,
+#top-bar,
+#toolbar,
+#app-header,
+.site-header,
+.page-header,
+.navbar,
+.header-bar,
+.banner,
+#menu-overlay,
+.menu-card {
+    display: none !important;
+}
+
 #game-container {
     flex: 1;
     position: relative;
