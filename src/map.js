@@ -108,10 +108,10 @@ function fitMapToWrapper() {
   const wW = mapWrapper.clientWidth, wH = mapWrapper.clientHeight;
   const natW = mapImage.naturalWidth, natH = mapImage.naturalHeight;
   if (wW === 0 || wH === 0) return;
-  const fitZoom = Math.min(wW / natW, wH / natH);
-  mapZoom = fitZoom;
-  mapPanX = (wW - natW * fitZoom) / 2;
-  mapPanY = (wH - natH * fitZoom) / 2;
+  const coverZoom = Math.max(wW / natW, wH / natH);
+  mapZoom = coverZoom;
+  mapPanX = (wW - natW * coverZoom) / 2;
+  mapPanY = (wH - natH * coverZoom) / 2;
   applyTransform();
   updateDynamicScale();
 }
@@ -160,9 +160,8 @@ function onWheel(e) {
   const oldZoom = mapZoom;
   const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
   let newZoom = oldZoom * factor;
-  newZoom = Math.min(2.8, newZoom);
-  const fitZoom = Math.min(mapWrapper.clientWidth / mapImage.naturalWidth, mapWrapper.clientHeight / mapImage.naturalHeight);
-  newZoom = Math.max(fitZoom * 0.5, newZoom);
+  const minZoom = Math.max(mapWrapper.clientWidth / mapImage.naturalWidth, mapWrapper.clientHeight / mapImage.naturalHeight);
+  newZoom = Math.min(2.8, Math.max(minZoom, newZoom));
   if (newZoom === oldZoom) return;
   mapZoom = newZoom;
   mapPanX = cursorX - ((cursorX - mapPanX) / oldZoom) * mapZoom;
